@@ -48,7 +48,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(appConfig.port,'0,0,0,0', () => {
+  await app.listen(appConfig.port, () => {
     logger.log('Listening at ' + appConfig.domain + '/');
   });
 }
