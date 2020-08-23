@@ -15,7 +15,7 @@ export class ProductController {
     ) {}
 
   
-    @Post('createProduct')
+    @Post('create')
     @ApiOperationId({summary:'Create Product'})
     @ApiConsumes('multipart/form-data')
     @ApiBody({
@@ -25,7 +25,7 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('file',{
         storage: primaryStoreMulterOption
     }))
-    async createImg(@UploadedFile() file:any, @Body() body:CreateProductDto): Promise<Product> {
+    async create(@UploadedFile() file:any, @Body() body:CreateProductDto): Promise<Product> {
         const {name, price, amount } = body
         return this.ProductService.createProduct({name, price, amount, file: file.path})
     }
