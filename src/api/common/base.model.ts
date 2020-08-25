@@ -66,5 +66,5 @@ export abstract class BaseDto {
 
   @ApiProperty()
   @AutoMap()
-  isActive: boolean;
+  isActive?: boolean;
 }

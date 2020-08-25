@@ -17,7 +17,7 @@ export class UserController {
   }
 
     @Get()
-    @ApiOperationId()
+    @ApiOperationId({ summary: 'user is logged in' })
     @Roles(UserRole.Admin, UserRole.User)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
   async me(@CurrentUser() currentUser: AuthUserDto): Promise<User> {

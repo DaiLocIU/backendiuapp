@@ -18,20 +18,16 @@ export class ProductService extends BaseService<Product> {
     super(productRepository);
   }
 
-  async createProduct({
-    name, price, amount, file,
-  }: CreateProductDto): Promise<Product> {
+  async createProduct(params: CreateProductDto, file: string = null): Promise<Product> {
     // Create Image Product
     const imageDb = await this.imageService.createImg(file);
     const imageProduct = Types.ObjectId(imageDb.id);
 
-    const paramsProduct = {
-      name,
-      price,
-      amount,
-      imageProduct,
-    };
-    return this.productRepository.createProduct(paramsProduct);
+    return this.productRepository.createProduct(params, imageProduct);
+  }
+
+  async getProduct():Promise<Product[]> {
+    return this.productRepository.getAll();
   }
 
   async getProductById(id: string):Promise<Product> {
@@ -39,7 +35,17 @@ export class ProductService extends BaseService<Product> {
   }
 
   async getImgByProductId(id:string):Promise<ImgProduct> {
-    const product = await this.getProductById(id) as any;
-    return this.imageService.findImgById(product.imageProduct.id);
+    const { imageProduct } = await this.getProductById(id) as any;
+    return this.imageService.findImgById(imageProduct.id);
+  }
+
+  async updateImgByProductId(id: string, file: any) {
+    const { imageProduct } = await this.getProductById(id) as any;
+    return this.imageService.updateImgById(imageProduct.id, file);
+  }
+
+  async deleteImageByProductId(id:string) {
+    const { imageProduct } = await this.getProductById(id) as any;
+    return this.imageService.deleteImgeById(imageProduct.id);
   }
 }

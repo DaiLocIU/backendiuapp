@@ -12,8 +12,8 @@ export class ImageRepository extends BaseRepository<ImgProduct> {
     super(imgProductModel);
   }
 
-  async createImgDb({ imgBig }: CreateImageProductDto): Promise<ImgProduct> {
-    const newImgProduct = this.createModel({ imgBig });
+  async createImgDb(imgBig: CreateImageProductDto): Promise<ImgProduct> {
+    const newImgProduct = this.createModel(imgBig);
     try {
       const result = await this.create(newImgProduct);
       return result.toJSON() as ImgProduct;
@@ -32,8 +32,7 @@ export class ImageRepository extends BaseRepository<ImgProduct> {
 
   async updateImageById(id: string, { imgBig }:CreateImageProductDto): Promise<ImgProduct> {
     try {
-      const result = await this.updateById(id, { imgBig });
-      return result.toJSON() as ImgProduct;
+      return await this.updateById(id, { imgBig });
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
