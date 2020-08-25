@@ -13,14 +13,20 @@ export class ProductRepository extends BaseRepository<Product> {
     
     async createProduct({name,price,amount,imageProduct}:any): Promise<Product> {
         const newProduct = this.createModel({name, price, amount, imageProduct});
-        console.log('newProduct ' + newProduct)
         try {
           const result = await this.create(newProduct);
-          console.log('result ' + result)
           return result.toJSON() as Product;
     } catch (e) {
           throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     }
+
+    async getProductById(id:string): Promise<Product> {
+        try {
+            return await this.findById(id)
+          } catch (e) {
+            ProductRepository.throwMongoError(e);
+          }
+        }
 
 }

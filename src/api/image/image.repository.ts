@@ -4,10 +4,9 @@ import { BaseRepository } from '../common/base.repository';
 import { ModelType } from '../types';
 import { ImgProduct } from '../../shared/imgProduct/imgProduct.model';
 import { CreateImageProductDto } from '../dtos/request-params/create-img-product.dto';
-import { CreateProductDto } from '../dtos/request-params/create-product.dto';
 
 @Injectable()
-export class UploadRepository extends BaseRepository<ImgProduct> {
+export class ImageRepository extends BaseRepository<ImgProduct> {
     constructor(@InjectModel(ImgProduct.modelName) private readonly imgProductModel: ModelType<ImgProduct>) {
         super(imgProductModel);
       }
@@ -20,6 +19,26 @@ export class UploadRepository extends BaseRepository<ImgProduct> {
       } catch (e) {
           throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
       }
+    }
+
+      async findImgById(id:string): Promise<ImgProduct> {
+        try {
+        return await this.findById(id)
+        } catch (e) {
+        ImageRepository.throwMongoError(e);
+        }
+      }
+
+
+      async updateImageById(id: string, {imgBig}:CreateImageProductDto): Promise<ImgProduct> {
+        try {
+          const result = await this.updateById(id, {imgBig})
+          return result.toJSON() as ImgProduct;
+      } catch (e) {
+          throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
 
       }
+
+      
 }

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UploadService } from './upload-image.service'
+import { ImageService } from './image.service'
 import { MongooseModule } from '@nestjs/mongoose';
 import { ImgProduct } from 'src/shared/imgProduct/imgProduct.model';
-import { UploadRepository } from './upload-image.repository';
+import { ImageRepository } from './image.repository';
 
 @Module({
     imports: [
@@ -10,7 +10,7 @@ import { UploadRepository } from './upload-image.repository';
             {name: ImgProduct.modelName, schema: ImgProduct.schema}
         ])
     ],
-  providers: [UploadRepository, UploadService],
-  exports: [UploadService],
+  providers: [ImageRepository, ImageService],
+  exports: [ImageService],
 })
-export class ApiUploadImageModule {}
+export class ApiImageModule {}
