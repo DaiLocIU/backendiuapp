@@ -1,14 +1,16 @@
+import { Response, Request } from 'express';
+import {
+  Post, Controller, Res, Body, Req,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { InjectAppConfig } from '../configuration/app.configuration';
 import { TokenResultDto } from '../dtos/auth/token-result.dto';
-import { LoginOauthParamsDto} from '../dtos/request-params/login-oauth-params.dto'
-import { LoginParamsDto } from '../dtos/request-params/login-params.dto'
-import { RegisterParamsDto } from '../dtos/request-params/register-params.dto'
+import { LoginOauthParamsDto } from '../dtos/request-params/login-oauth-params.dto';
+import { LoginParamsDto } from '../dtos/request-params/login-params.dto';
+import { RegisterParamsDto } from '../dtos/request-params/register-params.dto';
 import { AppConfig } from '../types/index';
-import { Response, Request } from 'express';
 import { SecurityService } from './security.service';
-import { Post, Controller, Res, Body, Req} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { ApiOperationId, ApiErrors } from '../common/decorators/swagger.decorator';
 
 @Controller('auth')
@@ -32,12 +34,11 @@ export class SecurityController {
   }
 
   @Post('register')
-  @ApiOperationId({summary:'Register new User'})
+  @ApiOperationId({ summary: 'Register new User' })
   async register(@Body() registerParams: RegisterParamsDto) {
     return await this.securityService.register(registerParams);
   }
 
- 
   @Post('login')
   @ApiOperationId()
   async login(@Body() loginParams: LoginParamsDto, @Req() req: Request): Promise<TokenResultDto> {
@@ -51,7 +52,10 @@ export class SecurityController {
 
   @Post('loginOauth')
   @ApiOperationId()
-  async loginOauth(@Body() loginParams: LoginOauthParamsDto, @Req() req: Request): Promise<TokenResultDto> {
+  async loginOauth(
+    @Body() loginParams: LoginOauthParamsDto,
+    @Req() req: Request,
+  ): Promise<TokenResultDto> {
     const [tokenResult, refreshToken] = await this.securityService.loginOauth(loginParams);
     req.res.cookie('rtok', refreshToken, {
       httpOnly: true,

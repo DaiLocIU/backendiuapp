@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateImageProductDto {
-    @ApiProperty({ required: true })
-    imgBig: string;
+    @ApiPropertyOptional({ required: false })
+    imgBig?: string;
 }

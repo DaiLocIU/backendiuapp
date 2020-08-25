@@ -11,7 +11,7 @@ export const dbConfiguration = registerAs('db', () => ({
   useCreateIndex: Boolean(process.env.MONGO_CREATE_INDEX) || true,
   useUnifiedTopology: Boolean(process.env.MONGO_UNIFIED_TOPOLOGY) || true,
   retryWrites: Boolean(process.env.RETRY_WRITES) || true,
-  w: process.env.W || 'majority'
+  w: process.env.W || 'majority',
 }));
 
 export const InjectDbConfig = () => Inject(dbConfiguration.KEY);

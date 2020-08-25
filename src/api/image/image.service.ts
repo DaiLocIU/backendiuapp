@@ -1,53 +1,57 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
-import { InjectCloudinaryConfig } from '../configuration/cloudinary.configuration';
-import {CloudinaryConfig} from '../types/index'
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { InjectMapper, AutoMapper } from 'nestjsx-automapper';
-import { ImageRepository } from './image.repository';
 import { ImgProduct } from 'src/shared/imgProduct/imgProduct.model';
+import { InjectCloudinaryConfig } from '../configuration/cloudinary.configuration';
+import { CloudinaryConfig } from '../types/index';
+import { ImageRepository } from './image.repository';
 import { BaseService } from '../common/base.service';
 
 @Injectable()
 export class ImageService extends BaseService<ImgProduct> {
-    constructor(
+  constructor(
       @InjectCloudinaryConfig() private readonly cloudinaryConfig: CloudinaryConfig,
       private readonly imageRepository: ImageRepository,
-      @InjectMapper() private readonly mapper: AutoMapper
+      @InjectMapper() private readonly mapper: AutoMapper,
 
-      ) {
-        super(imageRepository)
-        cloudinary.config({
-            cloud_name: cloudinaryConfig.cloud_name, 
-            api_key: cloudinaryConfig.api_key, 
-            api_secret: cloudinaryConfig.api_secret 
-        })
-      }
-      async uploadFile(file: any): Promise<UploadApiResponse> {
-        try {
-            return await cloudinary.uploader.upload(file);
-          } catch (e) {
-            throw new InternalServerErrorException(
+  ) {
+    super(imageRepository);
+    cloudinary.config({
+      cloud_name: cloudinaryConfig.cloud_name,
+      api_key: cloudinaryConfig.api_key,
+      api_secret: cloudinaryConfig.api_secret,
+    });
+  }
+
+  async uploadFile(file: any): Promise<UploadApiResponse> {
+    try {
+      return await cloudinary.uploader.upload(file);
+    } catch (e) {
+      throw new InternalServerErrorException(
               e.response?.body?.errors || e,
-              'Error upload image' + e.message
-            );
-          }
-      }
+              `Error upload image${e.message}`,
+      );
+    }
+  }
 
-      async createImg(file:any): Promise<ImgProduct> {
-        const imgFile = await this.uploadFile(file)
-        const imgUrl = imgFile.secure_url
+  async createImg(file:any): Promise<ImgProduct> {
+    let imgBig;
+    if (file) {
+      const imgFile = await this.uploadFile(file);
+      imgBig = imgFile.secure_url;
+    } else {
+      imgBig = null;
+    }
+    return this.imageRepository.createImgDb({ imgBig });
+  }
 
-        return this.imageRepository.createImgDb({imgBig:imgUrl})
-      }
+  async findImgById(id: string): Promise<ImgProduct> {
+    return this.imageRepository.findImgById(id);
+  }
 
-      async findImgById(id: string): Promise<ImgProduct> {
-        return this.imageRepository.findImgById(id)
-      }
-
-
-      async updateImgById(id, file:any): Promise<ImgProduct> {
-        const imgFile = await this.uploadFile(file)
-        const imgUrl = imgFile.secure_url
-        return this.imageRepository.updateImageById(id, {imgBig:imgUrl})
-      }
+  async updateImgById(id, file:any): Promise<ImgProduct> {
+    const imgFile = await this.uploadFile(file);
+    const imgUrl = imgFile.secure_url;
+    return this.imageRepository.updateImageById(id, { imgBig: imgUrl });
+  }
 }

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ImageService } from './image.service'
 import { MongooseModule } from '@nestjs/mongoose';
 import { ImgProduct } from 'src/shared/imgProduct/imgProduct.model';
+import { ImageService } from './image.service';
 import { ImageRepository } from './image.repository';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            {name: ImgProduct.modelName, schema: ImgProduct.schema}
-        ])
-    ],
+  imports: [
+    MongooseModule.forFeature([
+      { name: ImgProduct.modelName, schema: ImgProduct.schema },
+    ]),
+  ],
   providers: [ImageRepository, ImageService],
   exports: [ImageService],
 })

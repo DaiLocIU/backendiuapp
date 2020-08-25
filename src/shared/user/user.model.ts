@@ -1,8 +1,8 @@
-import { BaseModel } from '../../api/common/base.model';
-import { useMongoosePlugins } from '../../api/common/decorators/use-mongoose-plugin.decorator'
 import { prop } from '@typegoose/typegoose';
 import { AutoMap } from 'nestjsx-automapper';
 import { v4 as uuid } from 'uuid';
+import { useMongoosePlugins } from '../../api/common/decorators/use-mongoose-plugin.decorator';
+import { BaseModel } from '../../api/common/base.model';
 import { UserRole } from './user-role.enum';
 
 @useMongoosePlugins()
@@ -17,11 +17,15 @@ export class User extends BaseModel {
   })
   @AutoMap()
   email: string;
-  @prop({ required: true, minlength: 1, maxlength: 100, index: true })
+
+  @prop({
+    required: true, minlength: 1, maxlength: 100, index: true,
+  })
   @AutoMap()
   firstName: string;
+
   @prop({
-    required: function (this: User) {
+    required(this: User) {
       if (this.lastName === '') {
         return false;
       }
@@ -33,20 +37,24 @@ export class User extends BaseModel {
   })
   @AutoMap()
   lastName: string;
+
   @prop({ required: true, minlength: 6 })
   password: string;
 
   @prop({ default: uuid() })
   refreshTokenId: string;
+
   @prop()
   @AutoMap()
   avatarUrl: string;
+
   @prop({ enum: UserRole, default: UserRole.User })
   @AutoMap()
   role?: UserRole;
 
   @prop()
   providerUid;
+
   @prop()
   oauthId?: string;
 }

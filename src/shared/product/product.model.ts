@@ -1,8 +1,8 @@
-import { BaseModel } from '../../api/common/base.model';
-import { useMongoosePlugins } from '../../api/common/decorators/use-mongoose-plugin.decorator'
 import { prop, Ref } from '@typegoose/typegoose';
 import { AutoMap } from 'nestjsx-automapper';
-import { ImgProduct } from '../imgProduct/imgProduct.model'
+import { BaseModel } from '../../api/common/base.model';
+import { useMongoosePlugins } from '../../api/common/decorators/use-mongoose-plugin.decorator';
+import { ImgProduct } from '../imgProduct/imgProduct.model';
 
 @useMongoosePlugins()
 export class Product extends BaseModel {
@@ -16,15 +16,15 @@ export class Product extends BaseModel {
   name: string;
 
   @prop({
-      required: true,
-      float: true,
+    required: true,
+    float: true,
   })
   @AutoMap()
   price: number;
 
   @prop({
-      required: true,
-      min: 0
+    required: true,
+    min: 0,
   })
   @AutoMap()
   amount: number;

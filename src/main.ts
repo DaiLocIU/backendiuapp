@@ -1,14 +1,14 @@
 import { HttpStatus, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
-import { appConfiguration } from './api/configuration/app.configuration'
-import { AppConfig } from './api/types/index';
-const compression = require('compression')
-const cookieParser = require('cookie-parser')
-const helmet = require('helmet');
-import { AppModule } from './app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
+import { appConfiguration } from './api/configuration/app.configuration';
+import { AppConfig } from './api/types/index';
+import { AppModule } from './app/app.module';
 
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,8 +38,8 @@ async function bootstrap() {
   });
   logger.debug(`Swagger Docs enabled: ${appConfig.domain}/docs`);
 
-
   app.use('/robots.txt', (_, res) => {
+    /* eslint-disable-next-line  no-useless-concat */
     res.send('User-Agent: *\n' + 'Disallow: /');
   });
   app.use('/favicon.ico', (_, res) => {
@@ -49,7 +49,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(appConfig.port, () => {
-    logger.log('Listening at ' + appConfig.domain + '/');
+    logger.log(`Listening at ${appConfig.domain}/`);
   });
 }
 

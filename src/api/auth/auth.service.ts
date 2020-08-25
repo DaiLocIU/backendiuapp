@@ -1,13 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { sign, verify } from 'jsonwebtoken';
+import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
 import { InjectAuthConfig } from '../configuration/auth.configuration';
 import { AuthUserDto } from '../dtos/auth/auth-user.dto';
-import { TokenResultDto } from '../dtos/auth/token-result.dto'
+import { TokenResultDto } from '../dtos/auth/token-result.dto';
 import { AuthConfig } from '../types';
 import { UserService } from '../user/user.service';
 import { User } from '../../shared/user/user.model';
-import { sign, verify } from 'jsonwebtoken';
-import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
 import { JwtPayload } from './jwt-payload';
 
 @Injectable()
@@ -27,7 +27,9 @@ export class AuthService {
   }
 
   async createRefreshToken(id: string, tokenId: string): Promise<string> {
-    return sign({ id, tokenId }, this.authConfig.refreshJwtSecret, { expiresIn: this.authConfig.refreshJwtExpired });
+    return sign({ id, tokenId },
+      this.authConfig.refreshJwtSecret,
+      { expiresIn: this.authConfig.refreshJwtExpired });
   }
 
   async verify<TPayload extends object = {}>(token: string): Promise<TPayload> {

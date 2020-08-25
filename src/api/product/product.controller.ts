@@ -1,45 +1,48 @@
-import {Controller, Post, UseInterceptors,  UploadedFile, Body, Get, Param} from '@nestjs/common'
-import { ApiController, ApiOperationId } from '../common/decorators/swagger.decorator'
-import { ProductService } from './product.service'
-import { ApiConsumes, ApiBody } from '@nestjs/swagger'
-import { primaryStoreMulterOption } from 'src/shared/utils'
-import { Product } from 'src/shared/product/product.model'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { CreateProductDto } from '../dtos/request-params/create-product.dto'
-import { ImgProduct } from 'src/shared/imgProduct/imgProduct.model'
+import {
+  Controller, Post, UseInterceptors, UploadedFile, Body, Get, Param,
+} from '@nestjs/common';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { primaryStoreMulterOption } from 'src/shared/utils';
+import { Product } from 'src/shared/product/product.model';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImgProduct } from 'src/shared/imgProduct/imgProduct.model';
+import { ProductService } from './product.service';
+import { CreateProductDto } from '../dtos/request-params/create-product.dto';
+import { ApiController, ApiOperationId } from '../common/decorators/swagger.decorator';
 
 @ApiController('product', 'Product')
-@Controller("product")
+@Controller('product')
 export class ProductController {
-    constructor(
+  constructor(
         private ProductService: ProductService,
-    ) {}
+  ) {}
 
-  
     @Post()
-    @ApiOperationId({summary:'Create Product'})
+    @ApiOperationId({ summary: 'Create Product' })
     @ApiConsumes('multipart/form-data')
     @ApiBody({
-        type: CreateProductDto,
-      })
+      type: CreateProductDto,
+    })
 
-    @UseInterceptors(FileInterceptor('file',{
-        storage: primaryStoreMulterOption
+    @UseInterceptors(FileInterceptor('file', {
+      storage: primaryStoreMulterOption,
     }))
-    async create(@UploadedFile() file:any, @Body() body:CreateProductDto): Promise<Product> {
-        const {name, price, amount } = body
-        return this.ProductService.createProduct({name, price, amount, file: file.path})
-    }
+  async create(@UploadedFile() file:any, @Body() body:CreateProductDto): Promise<Product> {
+    const { name, price, amount } = body;
+    return this.ProductService.createProduct({
+      name, price, amount, file,
+    });
+  }
 
     @Get(':id')
-    @ApiOperationId({summary:'Get Product By Id'})
+    @ApiOperationId({ summary: 'Get Product By Id' })
     async getProductById(@Param('id') id:string): Promise<Product> {
-        return this.ProductService.getProductById(id)
+      return this.ProductService.getProductById(id);
     }
 
     @Get(':id/img')
-    @ApiOperationId({summary:'Get Img By ProductId'})
+    @ApiOperationId({ summary: 'Get Img By ProductId' })
     async getImgByProductId(@Param('id') id:string): Promise<ImgProduct> {
-        return this.ProductService.getImgByProductId(id)
+      return this.ProductService.getImgByProductId(id);
     }
 }

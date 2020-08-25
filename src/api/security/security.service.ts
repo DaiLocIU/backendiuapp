@@ -1,15 +1,23 @@
-import { BadRequestException, Injectable, NotFoundException, Logger, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  Logger,
+  UnauthorizedException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { compare } from 'bcrypt';
+import { Response } from 'express';
+import { InjectMapper, AutoMapper } from 'nestjsx-automapper';
 import { AuthService } from '../auth/auth.service';
 import { TokenResultDto } from '../dtos/auth/token-result.dto';
-import { LoginOauthParamsDto} from '../dtos/request-params/login-oauth-params.dto'
-import { LoginParamsDto } from '../dtos/request-params/login-params.dto'
-import { RegisterParamsDto } from '../dtos/request-params/register-params.dto'
+import { LoginOauthParamsDto } from '../dtos/request-params/login-oauth-params.dto';
+import { LoginParamsDto } from '../dtos/request-params/login-params.dto';
+import { RegisterParamsDto } from '../dtos/request-params/register-params.dto';
 import { UserService } from '../user/user.service';
 import { User } from '../../shared/user/user.model';
 import { parseFullName } from '../../shared/utils';
-import { compare } from 'bcrypt';
-import { Response } from 'express'
-import { InjectMapper, AutoMapper } from 'nestjsx-automapper';
 
 @Injectable()
 export class SecurityService {
@@ -27,13 +35,15 @@ export class SecurityService {
 
     const [firstName, lastName] = parseFullName(fullName);
 
-    const newUser = this.userService.createModel({ email, firstName, lastName, password });
+    const newUser = this.userService.createModel({
+      email, firstName, lastName, password,
+    });
     try {
       const result = await this.userService.create(newUser);
       return result.toJSON() as User;
-  } catch (e) {
+    } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    }
   }
 
   async login({ password, email }: LoginParamsDto): Promise<[TokenResultDto, string]> {
@@ -54,7 +64,9 @@ export class SecurityService {
     return await this.getTokens(user);
   }
 
-  async loginOauth({ email, oauthId, providerId }: LoginOauthParamsDto): Promise<[TokenResultDto, string]> {
+  async loginOauth(
+    { email, oauthId, providerId }: LoginOauthParamsDto,
+  ): Promise<[TokenResultDto, string]> {
     const user = await this.userService.findByEmail(email);
     if (user == null) {
       throw new BadRequestException(email, 'Wrong credentials');

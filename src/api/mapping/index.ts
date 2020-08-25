@@ -1,3 +1,3 @@
-import './libs/user.profile'
-import './libs/imgProduct.profile'
-import './libs/product.profile'
+import './libs/user.profile';
+import './libs/imgProduct.profile';
+import './libs/product.profile';

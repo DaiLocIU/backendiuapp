@@ -7,6 +7,6 @@ export class ImgProductProfile extends ProfileBase {
   constructor(private mapper: AutoMapper) {
     super();
     mapper
-      .createMap(ImgProduct, ImgProductDto)
+      .createMap(ImgProduct, ImgProductDto);
   }
 }

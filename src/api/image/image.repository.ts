@@ -7,38 +7,35 @@ import { CreateImageProductDto } from '../dtos/request-params/create-img-product
 
 @Injectable()
 export class ImageRepository extends BaseRepository<ImgProduct> {
-    constructor(@InjectModel(ImgProduct.modelName) private readonly imgProductModel: ModelType<ImgProduct>) {
-        super(imgProductModel);
-      }
-    
-      async createImgDb({imgBig}: CreateImageProductDto): Promise<ImgProduct> {
-        const newImgProduct = this.createModel({imgBig});
-        try {
-          const result = await this.create(newImgProduct);
-          return result.toJSON() as ImgProduct;
-      } catch (e) {
-          throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+  constructor(@InjectModel(ImgProduct.modelName)
+  private readonly imgProductModel: ModelType<ImgProduct>) {
+    super(imgProductModel);
+  }
+
+  async createImgDb({ imgBig }: CreateImageProductDto): Promise<ImgProduct> {
+    const newImgProduct = this.createModel({ imgBig });
+    try {
+      const result = await this.create(newImgProduct);
+      return result.toJSON() as ImgProduct;
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
 
-      async findImgById(id:string): Promise<ImgProduct> {
-        try {
-        return await this.findById(id)
-        } catch (e) {
-        ImageRepository.throwMongoError(e);
-        }
-      }
+  async findImgById(id:string): Promise<ImgProduct> {
+    try {
+      return await this.findById(id);
+    } catch (e) {
+      ImageRepository.throwMongoError(e);
+    }
+  }
 
-
-      async updateImageById(id: string, {imgBig}:CreateImageProductDto): Promise<ImgProduct> {
-        try {
-          const result = await this.updateById(id, {imgBig})
-          return result.toJSON() as ImgProduct;
-      } catch (e) {
-          throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-
-      }
-
-      
+  async updateImageById(id: string, { imgBig }:CreateImageProductDto): Promise<ImgProduct> {
+    try {
+      const result = await this.updateById(id, { imgBig });
+      return result.toJSON() as ImgProduct;
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ApiAuthModule } from '../api/auth/api-auth.module';
-import { ApiConfigModule,  } from '../api/configuration/configuration.module';
-import { dbConfiguration } from '../api/configuration/db.configuration'
-import { DbConfig } from '../api/types/index';
 import { AutomapperModule } from 'nestjsx-automapper';
+import { ApiAuthModule } from '../api/auth/api-auth.module';
+import { ApiConfigModule } from '../api/configuration/configuration.module';
+import { dbConfiguration } from '../api/configuration/db.configuration';
+import { DbConfig } from '../api/types/index';
 import { ApiModule } from './api.module';
 import '../api/mapping';
 

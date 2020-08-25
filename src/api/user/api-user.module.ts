@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DocumentType } from '@typegoose/typegoose';
+import { genSalt, hash } from 'bcrypt';
 import { authConfiguration } from '../configuration/auth.configuration';
 import { AuthConfig } from '../types';
 import { User } from '../../shared/user/user.model';
-import { DocumentType } from '@typegoose/typegoose';
-import { genSalt, hash } from 'bcrypt';
 import { UserRepository } from './user.repository';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
@@ -13,9 +13,10 @@ import { UserService } from './user.service';
   imports: [
     MongooseModule.forFeatureAsync([
       {
-        name:User.modelName,
+        name: User.modelName,
         useFactory: (authConfig: AuthConfig) => {
-          const schema = User.schema;
+          const { schema } = User;
+          /* eslint-disable-next-line func-names */
           schema.pre<DocumentType<User>>('save', async function () {
             if (this.isModified('password')) {
               const salt = await genSalt(authConfig.salt);
@@ -28,7 +29,7 @@ import { UserService } from './user.service';
       },
     ]),
   ],
-  controllers:[UserController],
+  controllers: [UserController],
   providers: [UserRepository, UserService],
   exports: [UserService],
 })

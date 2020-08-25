@@ -4,7 +4,7 @@ import { registerAs } from '@nestjs/config';
 export const appConfiguration = registerAs('app', () => ({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 8080,
-  domain: process.env.DOMAIN || 'https://backendiuapp.herokuapp.com',
+  domain: process.env.DOMAIN || 'https://backendiuapp.herokuapp.com', // https://backendiuapp.herokuapp.com  http://localhost:8080
   env: process.env.ENV || 'development',
   clientDomain: process.env.CLIENT_DOMAIN || 'http://localhost:4200',
 }));

@@ -1,6 +1,9 @@
+/* eslint-disable max-classes-per-file */
 import { ModelDefinition } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { buildSchema, getName, modelOptions, prop, Severity } from '@typegoose/typegoose';
+import {
+  buildSchema, getName, modelOptions, prop, Severity,
+} from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 import { AutoMap } from 'nestjsx-automapper';
 
@@ -11,12 +14,15 @@ export class BaseModel {
   @prop()
   @AutoMap()
   createdAt?: Date;
+
   @prop()
   @AutoMap()
   updatedAt?: Date;
+
   @prop({ required: true, default: true, index: true })
   @AutoMap()
   isActive: boolean;
+
   @AutoMap()
   id?: string;
 
@@ -24,14 +30,16 @@ export class BaseModel {
     if (this._schema) {
       return this._schema;
     }
-    return (this._schema = buildSchema(this, {
-      timestamps: true,
-      toJSON: {
-        getters: true,
-        virtuals: true,
-      },
-      id: true,
-    }));
+    /* eslint-disable-next-line no-return-assign */
+    return (
+      this._schema = buildSchema(this, {
+        timestamps: true,
+        toJSON: {
+          getters: true,
+          virtuals: true,
+        },
+        id: true,
+      }));
   }
 
   static get modelName(): string {
@@ -47,12 +55,15 @@ export abstract class BaseDto {
   @ApiPropertyOptional({ type: String, format: 'date-time' })
   @AutoMap()
   createdAt?: Date;
+
   @ApiPropertyOptional({ type: String, format: 'date-time' })
   @AutoMap()
   updatedAt?: Date;
+
   @ApiPropertyOptional()
   @AutoMap()
   id?: string;
+
   @ApiProperty()
   @AutoMap()
   isActive: boolean;

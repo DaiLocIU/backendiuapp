@@ -22,9 +22,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (statusCode === HttpStatus.UNAUTHORIZED) {
       if (typeof error.response !== 'string') {
-        error.response.message =
-          error.response.message ||
-          'You do not have permission to access this resource';
+        error.response.message = error.response.message
+          || 'You do not have permission to access this resource';
       }
     }
 

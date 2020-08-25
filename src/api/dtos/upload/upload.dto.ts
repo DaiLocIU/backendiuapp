@@ -1,7 +1,6 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FileUploadDto {
-  @ApiProperty({ type: 'string', format: 'binary' })
-  file: any;
+  @ApiProperty({ required: false, type: 'string', format: 'binary' })
+  file?: any;
 }

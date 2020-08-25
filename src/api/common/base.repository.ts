@@ -1,5 +1,4 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ModelType } from '../types/index';
 import { DocumentType } from '@typegoose/typegoose';
 import { MongoError } from 'mongodb';
 import {
@@ -11,6 +10,7 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
+import { ModelType } from '../types/index';
 import { BaseModel } from './base.model';
 
 type QueryList<T extends BaseModel> = DocumentQuery<DocumentType<T>[], DocumentType<T>>;
@@ -36,6 +36,7 @@ export abstract class BaseRepository<T extends BaseModel> {
     throw new InternalServerErrorException(err, err.errmsg);
   }
 
+  /* eslint-disable-next-line  class-methods-use-this */
   protected getQueryOptions(options?: QueryOptions) {
     const mergedOptions = {
       ...BaseRepository.defaultOptions,
@@ -44,15 +45,17 @@ export abstract class BaseRepository<T extends BaseModel> {
     const option = mergedOptions.lean ? { virtuals: true } : null;
 
     if (option && mergedOptions.autopopulate) {
-      option['autopopulate'] = true;
+      option.virtuals = true;
     }
 
     return { lean: option, autopopulate: mergedOptions.autopopulate };
   }
 
   createModel(doc?: Partial<T>): T {
+    /* eslint-disable-next-line new-cap */
     return new this.model(doc);
   }
+
   findAll(options?: QueryOptions): QueryList<T> {
     return this.model.find().setOptions(this.getQueryOptions(options));
   }
@@ -78,7 +81,9 @@ export abstract class BaseRepository<T extends BaseModel> {
   }
 
   deleteById(id: string, options?: QueryOptions): QueryItem<T> {
-    return this.model.findByIdAndDelete(Types.ObjectId(id)).setOptions(this.getQueryOptions(options));
+    return this.model.findByIdAndDelete(
+      Types.ObjectId(id),
+    ).setOptions(this.getQueryOptions(options));
   }
 
   updateByFilter(
@@ -89,14 +94,18 @@ export abstract class BaseRepository<T extends BaseModel> {
   ): QueryItem<T> {
     return this.model
       .findOneAndUpdate(filter, updateQuery, {
-        ...Object.assign({ omitUndefined: true }, updateOptions),
+        ...({ omitUndefined: true, ...updateOptions }),
         new: true,
       })
       .setOptions(this.getQueryOptions(options));
   }
 
   update(item: T, options?: QueryOptions): QueryItem<T> {
-    return this.updateByFilter({ _id: Types.ObjectId(item.id) as any }, { $set: item } as any, {}, options);
+    return this.updateByFilter(
+      { _id: Types.ObjectId(item.id) as any },
+      { $set: item } as any,
+      {}, options,
+    );
   }
 
   updateById(
@@ -105,7 +114,12 @@ export abstract class BaseRepository<T extends BaseModel> {
     updateOptions: QueryFindOneAndUpdateOptions & { multi?: boolean } = {},
     options?: QueryOptions,
   ): QueryItem<T> {
-    return this.updateByFilter({ _id: Types.ObjectId(id) as any }, updateQuery, updateOptions, options);
+    return this.updateByFilter(
+      { _id: Types.ObjectId(id) as any },
+      updateQuery,
+      updateOptions,
+      options,
+    );
   }
 
   count(filter: FilterQuery<DocumentType<T>> = {}): Query<number> {

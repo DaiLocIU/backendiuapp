@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common';
+import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
 import { BaseService } from '../common/base.service';
 import { User } from '../../shared/user/user.model';
-import { AutoMapper, InjectMapper } from 'nestjsx-automapper';
-import { UserRepository } from '../user/user.repository'
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -24,5 +24,4 @@ export class UserService extends BaseService<User> {
   async updateRefreshTokenId(id: string) {
     await this.userRepository.updateRefreshTokenId(id);
   }
-
 }
