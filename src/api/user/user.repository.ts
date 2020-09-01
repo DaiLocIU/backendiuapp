@@ -31,4 +31,15 @@ export class UserRepository extends BaseRepository<User> {
       UserRepository.throwMongoError(e);
     }
   }
+
+  async changePassword(id: string, newPassword: string): Promise<User> {
+    try {
+      return await this.updateById(
+        id,
+        { $set: { password: newPassword } },
+      );
+    } catch (e) {
+      UserRepository.throwMongoError(e);
+    }
+  }
 }

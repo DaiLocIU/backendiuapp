@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+/* eslint-disable */
 import { ModelDefinition } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
@@ -30,16 +30,14 @@ export class BaseModel {
     if (this._schema) {
       return this._schema;
     }
-    /* eslint-disable-next-line no-return-assign */
-    return (
-      this._schema = buildSchema(this, {
-        timestamps: true,
-        toJSON: {
-          getters: true,
-          virtuals: true,
-        },
-        id: true,
-      }));
+    return (this._schema = buildSchema(<any>this, {
+      timestamps: true,
+      toJSON: {
+        getters: true,
+        virtuals: true,
+      },
+      id: true,
+    }));
   }
 
   static get modelName(): string {

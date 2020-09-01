@@ -24,4 +24,8 @@ export class UserService extends BaseService<User> {
   async updateRefreshTokenId(id: string) {
     await this.userRepository.updateRefreshTokenId(id);
   }
+
+  async changePassword(id: string, newPassword: string): Promise<User> {
+    return this.userRepository.changePassword(id, newPassword);
+  }
 }

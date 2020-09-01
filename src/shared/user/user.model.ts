@@ -1,11 +1,11 @@
 import { prop } from '@typegoose/typegoose';
 import { AutoMap } from 'nestjsx-automapper';
 import { v4 as uuid } from 'uuid';
-import { useMongoosePlugins } from '../../api/common/decorators/use-mongoose-plugin.decorator';
+import { useMongoosePlugin } from '../../api/common/decorators/use-mongoose-plugin.decorator';
 import { BaseModel } from '../../api/common/base.model';
 import { UserRole } from './user-role.enum';
 
-@useMongoosePlugins()
+@useMongoosePlugin()
 export class User extends BaseModel {
   @prop({
     required: true,

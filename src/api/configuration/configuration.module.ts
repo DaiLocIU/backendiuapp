@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { sendGridConfiguration } from './sendgrid.configuration';
 import { appConfiguration } from './app.configuration';
 import { authConfiguration } from './auth.configuration';
 import { dbConfiguration } from './db.configuration';
@@ -10,7 +11,12 @@ import { cloudinaryConfiguration } from './cloudinary.configuration';
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: true,
-      load: [appConfiguration, authConfiguration, dbConfiguration, cloudinaryConfiguration],
+      load: [
+        appConfiguration,
+        authConfiguration,
+        dbConfiguration,
+        cloudinaryConfiguration,
+        sendGridConfiguration],
     }),
   ],
 })

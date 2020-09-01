@@ -23,6 +23,16 @@ import { UserService } from './user.service';
               this.password = await hash(this.password, salt);
             }
           });
+          // eslint-disable-next-line func-names
+          schema.pre('findOneAndUpdate', async function () {
+            const { password } = this.getUpdate().$set;
+            if (password) {
+              const salt = await genSalt(authConfig.salt);
+              const passwordHash = await hash(password, salt);
+              this.getUpdate().$set.password = passwordHash;
+            }
+          });
+          // eslint-disable-next-line func-names
           return schema;
         },
         inject: [authConfiguration.KEY],

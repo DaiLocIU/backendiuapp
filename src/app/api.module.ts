@@ -3,12 +3,14 @@ import { ApiSecurityModule } from 'src/api/security/api-security.module';
 import { ApiUserModule } from 'src/api/user/api-user.module';
 import { ApiImageModule } from 'src/api/image/api-image.module';
 import { ApiProductModule } from 'src/api/product/api-product.module';
+import { ApiEmailModule } from '../api/email/api-email.module';
 
 export const apiModules = [
   ApiUserModule,
   ApiSecurityModule,
   ApiImageModule,
   ApiProductModule,
+  ApiEmailModule,
 ];
 
 @Module({

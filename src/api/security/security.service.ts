@@ -10,6 +10,9 @@ import {
 import { compare } from 'bcrypt';
 import { Response } from 'express';
 import { InjectMapper, AutoMapper } from 'nestjsx-automapper';
+import { verify } from 'jsonwebtoken';
+import { EmailTemplate } from '../email/email.template-enum';
+import { EmailService } from '../email/email.service';
 import { AuthService } from '../auth/auth.service';
 import { TokenResultDto } from '../dtos/auth/token-result.dto';
 import { LoginOauthParamsDto } from '../dtos/request-params/login-oauth-params.dto';
@@ -24,6 +27,7 @@ export class SecurityService {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly emailService: EmailService,
     @InjectMapper() private readonly mapper: AutoMapper,
   ) {}
 
@@ -131,5 +135,31 @@ export class SecurityService {
       this.authService.createRefreshToken(user.id, user.refreshTokenId),
     ]);
     return [accessTokenResult, refreshToken];
+  }
+
+  async resquetResetPassword(email: string): Promise<string> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException(email, 'User not found');
+    }
+    const resetPasswordToken = await this.authService.createResetPasswordToken(email);
+    await this.emailService.sendByTemplate(
+      EmailTemplate.ResetPassword,
+      {
+        to: email,
+        from: '',
+        templateId: EmailTemplate.ResetPassword,
+        dynamicTemplateData: {
+          token: resetPasswordToken,
+        },
+      },
+    );
+    return resetPasswordToken;
+  }
+
+  async resetPassword(token: string, newPassword:string): Promise<User> {
+    const tokenResult = await this.authService.verifyResetPasswordToken(token);
+    const user = await this.userService.findByEmail(tokenResult.email);
+    return await this.userService.changePassword(user.id, newPassword);
   }
 }

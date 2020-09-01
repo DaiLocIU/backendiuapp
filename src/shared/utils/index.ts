@@ -1,5 +1,5 @@
-const path = require('path');
-const multer = require('multer');
+import path from 'path';
+import multer from 'multer';
 
 export function parseFullName(fullName: string): [string, string] {
   const parts = fullName.trim().split(' ');

@@ -1,8 +1,11 @@
 import { Response, Request } from 'express';
 import {
-  Post, Controller, Res, Body, Req,
+  Post, Controller, Res, Body, Req, Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/shared/user/user.model';
+import { ChangePassword } from '../dtos/request-params/change-password.dto';
+import { RequestResetPassword } from '../dtos/request-params/request-reset-password';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { InjectAppConfig } from '../configuration/app.configuration';
 import { TokenResultDto } from '../dtos/auth/token-result.dto';
@@ -69,5 +72,19 @@ export class SecurityController {
   async logout(@Cookie('rtok') refreshToken: string, @Req() req: Request): Promise<void> {
     await this.securityService.revoke(refreshToken, req.res);
     req.res.clearCookie('rtok');
+  }
+
+  @Post('requestResetPassword')
+  @ApiOperationId()
+  async requestResetPassword(@Body() body: RequestResetPassword): Promise<string> {
+    const resetPasswordToken = await this.securityService.resquetResetPassword(body.email);
+    return resetPasswordToken;
+  }
+
+  @Post('resetPassword/:token')
+  @ApiOperationId()
+  async resetPassword(@Param('token') token:string, @Body() body:ChangePassword): Promise<User> {
+    console.log(token);
+    return await this.securityService.resetPassword(token, body.newPassword);
   }
 }

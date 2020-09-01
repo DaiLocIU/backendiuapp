@@ -32,9 +32,30 @@ export class AuthService {
       { expiresIn: this.authConfig.refreshJwtExpired });
   }
 
+  async createResetPasswordToken(email: string): Promise<string> {
+    const token = sign(
+      { email },
+      this.authConfig.jwtSecret,
+      { expiresIn: this.authConfig.resetPasswordJwtExpired },
+    );
+    console.log(token);
+    return token;
+  }
+
   async verify<TPayload extends object = {}>(token: string): Promise<TPayload> {
     try {
       return await this.jwtService.verifyAsync<TPayload>(token);
+    } catch (e) {
+      throw new InternalServerErrorException(token, 'Error verifying token');
+    }
+  }
+
+  async verifyResetPasswordToken(token:string): Promise<{email: string}> {
+    console.log(`tokenvr ${token}`);
+    try {
+      return (await verify(token, this.authConfig.jwtSecret)) as {
+        email: string
+      };
     } catch (e) {
       throw new InternalServerErrorException(token, 'Error verifying token');
     }
