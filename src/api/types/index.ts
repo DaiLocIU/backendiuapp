@@ -1,5 +1,7 @@
-import { ConfigType } from '@nestjs/config';
 import { AnyParamConstructor, ReturnModelType } from '@typegoose/typegoose/lib/types';
+import { ConfigType } from '@nestjs/config';
+import { arenaConfiguration } from '../configuration/arena.configuration';
+import { redisConfiguration } from '../configuration/redis.configuration';
 import { sendGridConfiguration } from '../configuration/sendgrid.configuration';
 import { appConfiguration } from '../configuration/app.configuration';
 import { authConfiguration } from '../configuration/auth.configuration';
@@ -14,3 +16,5 @@ export type CloudinaryConfig = ConfigType<typeof cloudinaryConfiguration>
 export type DbConfig = ConfigType<typeof dbConfiguration>;
 export type AppConfig = ConfigType<typeof appConfiguration>;
 export type SendGridConfig = ConfigType<typeof sendGridConfiguration>;
+export type RedisConfig = ConfigType<typeof redisConfiguration>
+export type ArenaConfig = ConfigType<typeof arenaConfiguration>

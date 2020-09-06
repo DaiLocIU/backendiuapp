@@ -1,24 +1,50 @@
 import { HttpStatus, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import Bull from 'bull';
+import { arenaConfiguration } from './api/configuration/arena.configuration';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
-import { appConfiguration } from './api/configuration/app.configuration';
-import { AppConfig } from './api/types/index';
+import { AppConfig, ArenaConfig, RedisConfig } from './api/types/index';
 import { AppModule } from './app/app.module';
+import { redisConfiguration } from './api/configuration/redis.configuration';
+import { appConfiguration } from './api/configuration/app.configuration';
+import { queueNames } from './background/common/queues';
 
-const compression = require('compression');
-const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
+const Arena = require('bull-arena');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const appConfig = app.get<AppConfig>(appConfiguration.KEY);
-
+  const arenaConfig = app.get<ArenaConfig>(arenaConfiguration.KEY);
+  const redisConfig = app.get<RedisConfig>(redisConfiguration.KEY);
   const logger = new Logger('NestApplication');
   app.use(compression());
   app.use(helmet());
   app.use(cookieParser());
+
+  const arena = Arena(
+    {
+      Bull,
+      queues: queueNames.map((queueName) => ({
+        name: queueName,
+        hostId: queueName,
+        redis: {
+          host: redisConfig.host,
+          port: redisConfig.port,
+          password: redisConfig.password,
+        },
+        type: 'bull',
+      })),
+    },
+    arenaConfig,
+  );
+  const arenaEndpoint = '/api/arena';
+  app.use(arenaEndpoint, arena);
+  Logger.log(`Arena: ${appConfig.domain}${arenaEndpoint}`, 'NestApplication');
 
   const options = new DocumentBuilder()
     .setTitle('Auth-Nestjs-Mongodb')
