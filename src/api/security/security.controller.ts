@@ -1,11 +1,11 @@
 import { Response, Request } from 'express';
 import {
-  Post, Controller, Res, Body, Req, Param,
+  Post, Controller, Res, Body, Req, Param, Put,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { User } from 'src/shared/user/user.model';
 import { ChangePassword } from '../dtos/request-params/change-password.dto';
-import { RequestResetPassword } from '../dtos/request-params/request-reset-password';
+import { RequestResetPassword } from '../dtos/request-params/request-reset-password.dto';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { InjectAppConfig } from '../configuration/app.configuration';
 import { TokenResultDto } from '../dtos/auth/token-result.dto';
@@ -15,6 +15,7 @@ import { RegisterParamsDto } from '../dtos/request-params/register-params.dto';
 import { AppConfig } from '../types/index';
 import { SecurityService } from './security.service';
 import { ApiOperationId, ApiErrors } from '../common/decorators/swagger.decorator';
+import { VerifyRegistrationParamsVm } from '../dtos/request-params/verify-registration-params.dto';
 
 @Controller('auth')
 @ApiTags('Security')
@@ -42,6 +43,15 @@ export class SecurityController {
     return await this.securityService.register(registerParams);
   }
 
+  @Put('verify')
+  @ApiOkResponse({ type: User })
+  @ApiOperationId()
+  async verify(
+    @Body() verifyParams: VerifyRegistrationParamsVm,
+  ): Promise<User> {
+    return await this.securityService.verify(verifyParams.token);
+  }
+
   @Post('login')
   @ApiOperationId()
   async login(@Body() loginParams: LoginParamsDto, @Req() req: Request): Promise<TokenResultDto> {
@@ -53,19 +63,19 @@ export class SecurityController {
     return tokenResult;
   }
 
-  @Post('loginOauth')
-  @ApiOperationId()
-  async loginOauth(
-    @Body() loginParams: LoginOauthParamsDto,
-    @Req() req: Request,
-  ): Promise<TokenResultDto> {
-    const [tokenResult, refreshToken] = await this.securityService.loginOauth(loginParams);
-    req.res.cookie('rtok', refreshToken, {
-      httpOnly: true,
-      secure: this.appConfig.env !== 'development',
-    });
-    return tokenResult;
-  }
+  // @Post('loginOauth')
+  // @ApiOperationId()
+  // async loginOauth(
+  //   @Body() loginParams: LoginOauthParamsDto,
+  //   @Req() req: Request,
+  // ): Promise<TokenResultDto> {
+  //   const [tokenResult, refreshToken] = await this.securityService.loginOauth(loginParams);
+  //   req.res.cookie('rtok', refreshToken, {
+  //     httpOnly: true,
+  //     secure: this.appConfig.env !== 'development',
+  //   });
+  //   return tokenResult;
+  // }
 
   @Post('logout')
   @ApiOperationId()

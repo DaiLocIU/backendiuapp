@@ -1,5 +1,6 @@
 import { AnyParamConstructor, ReturnModelType } from '@typegoose/typegoose/lib/types';
 import { ConfigType } from '@nestjs/config';
+import { webConfiguration } from '../configuration/web.configuration';
 import { arenaConfiguration } from '../configuration/arena.configuration';
 import { redisConfiguration } from '../configuration/redis.configuration';
 import { sendGridConfiguration } from '../configuration/sendgrid.configuration';
@@ -18,3 +19,4 @@ export type AppConfig = ConfigType<typeof appConfiguration>;
 export type SendGridConfig = ConfigType<typeof sendGridConfiguration>;
 export type RedisConfig = ConfigType<typeof redisConfiguration>
 export type ArenaConfig = ConfigType<typeof arenaConfiguration>
+export type WebConfig = ConfigType<typeof webConfiguration>

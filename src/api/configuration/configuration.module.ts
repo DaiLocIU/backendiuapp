@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { webConfiguration } from './web.configuration';
 import { arenaConfiguration } from './arena.configuration';
 import { sendGridConfiguration } from './sendgrid.configuration';
 import { appConfiguration } from './app.configuration';
@@ -21,6 +22,7 @@ import { redisConfiguration } from './redis.configuration';
         sendGridConfiguration,
         redisConfiguration,
         arenaConfiguration,
+        webConfiguration,
       ],
     }),
   ],

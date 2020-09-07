@@ -48,12 +48,12 @@ export class User extends BaseModel {
   @AutoMap()
   avatarUrl: string;
 
+  @prop({ default: null })
+  verify: Date;
+
   @prop({ enum: UserRole, default: UserRole.User })
   @AutoMap()
   role?: UserRole;
-
-  @prop()
-  providerUid;
 
   @prop()
   oauthId?: string;

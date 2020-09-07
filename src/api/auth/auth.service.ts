@@ -32,6 +32,10 @@ export class AuthService {
       { expiresIn: this.authConfig.refreshJwtExpired });
   }
 
+  async createVerifyToken(email: string): Promise<string> {
+    return await this.jwtService.signAsync({ email }, { expiresIn: '1h' });
+  }
+
   async createResetPasswordToken(email: string): Promise<string> {
     const token = sign(
       { email },

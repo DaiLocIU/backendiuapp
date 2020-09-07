@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AutomapperModule } from 'nestjsx-automapper';
+import { BackgroundModule } from './background.module';
 import { ApiAuthModule } from '../api/auth/api-auth.module';
 import { ApiConfigModule } from '../api/configuration/configuration.module';
 import { dbConfiguration } from '../api/configuration/db.configuration';
@@ -18,6 +19,7 @@ import '../api/mapping';
     ApiConfigModule,
     ApiAuthModule,
     ApiModule,
+    BackgroundModule,
   ],
 })
 export class AppModule {}

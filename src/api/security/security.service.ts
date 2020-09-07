@@ -11,6 +11,11 @@ import { compare } from 'bcrypt';
 import { Response } from 'express';
 import { InjectMapper, AutoMapper } from 'nestjsx-automapper';
 import { verify } from 'jsonwebtoken';
+import { VerifyRegistrationEmailData } from 'src/background/common/interfaces/verify-registration-email-data.interface';
+import { InjectQueue } from '@nestjs/bull';
+import { emailQueueName } from 'src/background/common/queues';
+import { Queue } from 'bull';
+import { EmailJob } from 'src/background/common/email-job.enum';
 import { EmailTemplate } from '../email/email.template-enum';
 import { EmailService } from '../email/email.service';
 import { AuthService } from '../auth/auth.service';
@@ -21,6 +26,9 @@ import { RegisterParamsDto } from '../dtos/request-params/register-params.dto';
 import { UserService } from '../user/user.service';
 import { User } from '../../shared/user/user.model';
 import { parseFullName } from '../../shared/utils';
+import { InjectAppConfig } from '../configuration/app.configuration';
+import { WebConfig, AppConfig } from '../types';
+import { InjectWebConfig } from '../configuration/web.configuration';
 
 @Injectable()
 export class SecurityService {
@@ -28,7 +36,10 @@ export class SecurityService {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
+    @InjectQueue(emailQueueName) private readonly emailQueue: Queue,
     @InjectMapper() private readonly mapper: AutoMapper,
+    @InjectWebConfig() private readonly webConfig: WebConfig,
+    @InjectAppConfig() private readonly appConfig: AppConfig,
   ) {}
 
   async register({ email, fullName, password }: RegisterParamsDto) {
@@ -42,12 +53,39 @@ export class SecurityService {
     const newUser = this.userService.createModel({
       email, firstName, lastName, password,
     });
-    try {
-      const result = await this.userService.create(newUser);
-      return result.toJSON() as User;
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    const verifyToken = await this.authService.createVerifyToken(newUser.email);
+
+    const emailData: VerifyRegistrationEmailData = {
+      email: newUser.email,
+      firstName: newUser.firstName,
+      verifyUrl: this.getVerifyUrl(verifyToken),
+    };
+    await this.emailQueue.add(EmailJob.VerifyRegistration, emailData);
+
+    const result = await this.userService.create(newUser);
+    return result.toJSON() as User;
+  }
+
+  async verify(token: string): Promise<User> {
+    const { email } = await this.authService.verify<{ email: string }>(token);
+    const user = await this.userService.findByEmail(email);
+    if (user == null) {
+      throw new NotFoundException(email, 'User not found');
     }
+
+    if (user.verify != null) {
+      throw new BadRequestException(email, 'User has been verified');
+    }
+
+    return await this.userService.verify(user.id);
+  }
+
+  private getVerifyUrl(verifyToken: string) {
+    return (
+      `${this.appConfig.clientDomain
+       + this.webConfig.verifyEndpoint
+      }?token=${verifyToken}`
+    );
   }
 
   async login({ password, email }: LoginParamsDto): Promise<[TokenResultDto, string]> {
@@ -68,24 +106,24 @@ export class SecurityService {
     return await this.getTokens(user);
   }
 
-  async loginOauth(
-    { email, oauthId, providerId }: LoginOauthParamsDto,
-  ): Promise<[TokenResultDto, string]> {
-    const user = await this.userService.findByEmail(email);
-    if (user == null) {
-      throw new BadRequestException(email, 'Wrong credentials');
-    }
+  // async loginOauth(
+  //   { email, oauthId, providerId }: LoginOauthParamsDto,
+  // ): Promise<[TokenResultDto, string]> {
+  //   const user = await this.userService.findByEmail(email);
+  //   if (user == null) {
+  //     throw new BadRequestException(email, 'Wrong credentials');
+  //   }
 
-    if (user.oauthId == null) {
-      throw new BadRequestException(email, 'Invalid OAuth User');
-    }
+  //   if (user.oauthId == null) {
+  //     throw new BadRequestException(email, 'Invalid OAuth User');
+  //   }
 
-    if (user.oauthId === oauthId && user.providerUid === providerId) {
-      return await this.getTokens(user);
-    }
+  //   if (user.oauthId === oauthId && user.providerUid === providerId) {
+  //     return await this.getTokens(user);
+  //   }
 
-    throw new BadRequestException(oauthId, 'OAuth ID does not match');
-  }
+  //   throw new BadRequestException(oauthId, 'OAuth ID does not match');
+  // }
 
   async refresh(refreshToken: string): Promise<[TokenResultDto, string]> {
     if (refreshToken == null) {
@@ -150,11 +188,19 @@ export class SecurityService {
         from: '',
         templateId: EmailTemplate.ResetPassword,
         dynamicTemplateData: {
-          token: resetPasswordToken,
+          resetPasswordUrl: this.getResetPasswordUrl(resetPasswordToken),
         },
       },
     );
     return resetPasswordToken;
+  }
+
+  private getResetPasswordUrl(resetPasswordToken: string) {
+    return (
+      `${this.appConfig.clientDomain
+       + this.webConfig.resetPasswordEndpoint
+      }?token=${resetPasswordToken}`
+    );
   }
 
   async resetPassword(token: string, newPassword:string): Promise<User> {
