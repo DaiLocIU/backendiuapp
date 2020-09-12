@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import crypto from 'crypto-js';
 import https from 'https';
+import { v4 as uuid } from 'uuid';
 import { InjectMomoConfig } from '../configuration/momo.configuration';
 import { MomoConfig } from '../types/index';
 
@@ -25,9 +26,9 @@ export class PaymentService {
   async paymentTest() {
     const { partnerCode } = this.momoConfig;
     const { accessKey } = this.momoConfig;
-    const requestId = 'hhh456789123';
+    const requestId = uuid();
     const amount = '20000';
-    const orderId = 'hhh456789123';
+    const orderId = uuid();
     const orderInfo = 'Buy Ticket Football';
     const notifyUrl = 'https://momo.vn';
     const returnUrl = 'https://momo.vn';
