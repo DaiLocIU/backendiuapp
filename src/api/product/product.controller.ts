@@ -1,5 +1,5 @@
 import {
-  Controller, Post, UseInterceptors, UploadedFile, Body, Get, Param, Patch,
+  Controller, Post, UseInterceptors, UploadedFile, Body, Get, Param, Patch, Query,
 } from '@nestjs/common';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { primaryStoreMulterOption } from 'src/shared/utils';
@@ -37,6 +37,12 @@ export class ProductController {
     async getAll(): Promise<Product[]> {
       return this.ProductService.getProduct();
     }
+
+    // @Get('search')
+    // @ApiOperationId({ summary: 'Get All Product By Text' })
+    // async getProductByText(@Query('textSearch') textSearch: string): Promise<Product[]> {
+    //   return this.ProductService.getProductByText(textSearch);
+    // }
 
     @Get(':id')
     @ApiOperationId({ summary: 'Product By Id' })

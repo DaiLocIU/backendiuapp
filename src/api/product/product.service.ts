@@ -48,4 +48,8 @@ export class ProductService extends BaseService<Product> {
     const { imageProduct } = await this.getProductById(id) as any;
     return this.imageService.deleteImgeById(imageProduct.id);
   }
+
+  // async getProductByText(textSearch: string) {
+  //   return this.productRepository.findByTextIndex(textSearch);
+  // }
 }

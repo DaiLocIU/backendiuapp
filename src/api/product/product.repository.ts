@@ -37,4 +37,14 @@ export class ProductRepository extends BaseRepository<Product> {
       ProductRepository.throwMongoError(e);
     }
   }
+
+  // async getProductByText(textSearch: string): Promise<Product[]> {
+  //   try {
+  //     const productRe = await this.findByTextIndex(textSearch);
+  //     console.log(productRe);
+  //     return productRe;
+  //   } catch (e) {
+  //     ProductRepository.throwMongoError(e);
+  //   }
+  // }
 }

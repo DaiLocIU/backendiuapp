@@ -56,6 +56,11 @@ export abstract class BaseRepository<T extends BaseModel> {
     return new this.model(doc);
   }
 
+  // findByTextIndex(textSearch: string): QueryList<T> {
+  //   return this.model.find({ $text: { $search: textSearch }},
+  //     { score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+  // }
+
   findAll(options?: QueryOptions): QueryList<T> {
     return this.model.find().setOptions(this.getQueryOptions(options));
   }

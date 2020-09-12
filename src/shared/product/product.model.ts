@@ -1,10 +1,11 @@
-import { prop, Ref } from '@typegoose/typegoose';
+import { prop, Ref, index } from '@typegoose/typegoose';
 import { AutoMap } from 'nestjsx-automapper';
 import { BaseModel } from '../../api/common/base.model';
 import { useMongoosePlugin } from '../../api/common/decorators/use-mongoose-plugin.decorator';
 import { ImgProduct } from '../imgProduct/imgProduct.model';
 
 @useMongoosePlugin()
+@index({ name: 'text' })
 export class Product extends BaseModel {
   @prop({
     required: true,
