@@ -5,7 +5,6 @@ import { useMongoosePlugin } from '../../api/common/decorators/use-mongoose-plug
 import { ImgProduct } from '../imgProduct/imgProduct.model';
 
 @useMongoosePlugin()
-@index({ name: 'text' })
 export class Product extends BaseModel {
   @prop({
     required: true,

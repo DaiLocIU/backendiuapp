@@ -49,7 +49,7 @@ export class ProductService extends BaseService<Product> {
     return this.imageService.deleteImgeById(imageProduct.id);
   }
 
-  // async getProductByText(textSearch: string) {
-  //   return this.productRepository.findByTextIndex(textSearch);
-  // }
+  async getProductByText(textSearch: string) {
+    return this.productRepository.fullTextSearchProduct(textSearch);
+  }
 }

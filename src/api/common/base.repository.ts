@@ -2,6 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { DocumentType } from '@typegoose/typegoose';
 import { MongoError } from 'mongodb';
 import {
+  Aggregate,
   CreateQuery,
   DocumentQuery,
   FilterQuery,
@@ -56,10 +57,9 @@ export abstract class BaseRepository<T extends BaseModel> {
     return new this.model(doc);
   }
 
-  // findByTextIndex(textSearch: string): QueryList<T> {
-  //   return this.model.find({ $text: { $search: textSearch }},
-  //     { score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
-  // }
+  findByAggregate(filter: FilterQuery<DocumentType<T>>[] = [{}]):Aggregate<T[]> {
+    return this.model.aggregate(filter);
+  }
 
   findAll(options?: QueryOptions): QueryList<T> {
     return this.model.find().setOptions(this.getQueryOptions(options));

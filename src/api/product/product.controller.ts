@@ -38,11 +38,11 @@ export class ProductController {
       return this.ProductService.getProduct();
     }
 
-    // @Get('search')
-    // @ApiOperationId({ summary: 'Get All Product By Text' })
-    // async getProductByText(@Query('textSearch') textSearch: string): Promise<Product[]> {
-    //   return this.ProductService.getProductByText(textSearch);
-    // }
+    @Get('search')
+    @ApiOperationId({ summary: 'Get All Product By Text' })
+    async getProductByText(@Query('textSearch') textSearch: string) {
+      return this.ProductService.getProductByText(textSearch);
+    }
 
     @Get(':id')
     @ApiOperationId({ summary: 'Product By Id' })

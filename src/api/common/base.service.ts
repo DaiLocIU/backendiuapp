@@ -1,6 +1,5 @@
 import { DocumentType } from '@typegoose/typegoose';
 import { CreateQuery, UpdateQuery } from 'mongoose';
-import { AutoMapper } from 'nestjsx-automapper';
 import { BaseRepository } from './base.repository';
 import { BaseModel } from './base.model';
 
@@ -21,6 +20,6 @@ export abstract class BaseService<TModel extends BaseModel> {
 
   async updateBy(id: string, updateQuery: UpdateQuery<DocumentType<TModel>>)
   :Promise<DocumentType<TModel>> {
-    return await this.repository.updateById(id, updateQuery).exec();
+    return await this.repository.updateById(id, updateQuery as any).exec();
   }
 }

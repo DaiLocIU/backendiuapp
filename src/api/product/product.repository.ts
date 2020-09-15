@@ -38,13 +38,37 @@ export class ProductRepository extends BaseRepository<Product> {
     }
   }
 
-  // async getProductByText(textSearch: string): Promise<Product[]> {
-  //   try {
-  //     const productRe = await this.findByTextIndex(textSearch);
-  //     console.log(productRe);
-  //     return productRe;
-  //   } catch (e) {
-  //     ProductRepository.throwMongoError(e);
-  //   }
-  // }
+  async fullTextSearchProduct(textSearch: string): Promise<Product[]> {
+    try {
+      const products = await this.findByAggregate(
+        [
+          {
+            $search: {
+              autocomplete: {
+                path: 'name',
+                query: textSearch,
+              },
+            },
+          }, {
+            $project: {
+              _id: 0,
+              price: 1,
+              name: 1,
+              amount: 1,
+              score: {
+                $meta: 'searchScore',
+              },
+            },
+          }, {
+            $sort: {
+              score: -1,
+            },
+          },
+        ],
+      );
+      return products;
+    } catch (e) {
+      ProductRepository.throwMongoError(e);
+    }
+  }
 }
