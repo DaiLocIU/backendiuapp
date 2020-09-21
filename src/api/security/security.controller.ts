@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import {
   Post, Controller, Res, Body, Req, Param, Put,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { User } from 'src/shared/user/user.model';
 import { ChangePassword } from '../dtos/request-params/change-password.dto';
 import { RequestResetPassword } from '../dtos/request-params/request-reset-password.dto';
@@ -28,6 +28,15 @@ export class SecurityController {
 
   @Post('refreshToken')
   @ApiOperationId()
+  @ApiCreatedResponse({
+    type: TokenResultDto,
+    headers: {
+      'Set-Cookie': {
+        description: 'Refresh Token',
+        schema: { type: 'string' },
+      },
+    },
+  })
   async refreshToken(@Cookie('rtok') refreshToken: string, @Res() res: Response): Promise<TokenResultDto> {
     const [tokenResult, newToken] = await this.securityService.refresh(refreshToken);
     res.cookie('rtok', newToken, {
@@ -38,8 +47,9 @@ export class SecurityController {
   }
 
   @Post('register')
+  @ApiOkResponse({ type: User })
   @ApiOperationId({ summary: 'Register new User' })
-  async register(@Body() registerParams: RegisterParamsDto) {
+  async register(@Body() registerParams: RegisterParamsDto): Promise<User> {
     return await this.securityService.register(registerParams);
   }
 
@@ -53,6 +63,15 @@ export class SecurityController {
   }
 
   @Post('login')
+  @ApiCreatedResponse({
+    type: TokenResultDto,
+    headers: {
+      'Set-Cookie': {
+        description: 'Login',
+        schema: { type: 'string' },
+      },
+    },
+  })
   @ApiOperationId()
   async login(@Body() loginParams: LoginParamsDto, @Req() req: Request): Promise<TokenResultDto> {
     const [tokenResult, refreshToken] = await this.securityService.login(loginParams);
